@@ -41,9 +41,12 @@ void matrix_vector_product(const std::vector<double>& a, const std::vector<doubl
 }
 
 void run_parallel(int m, int n, int num_threads) {
-    std::vector<double> a(m * n);
-    std::vector<double> b(n);
-    std::vector<double> c(m);
+    std::vector<double> a;
+    a.reserve(m * n); // Резервируем память для матрицы
+    std::vector<double> b;
+    b.reserve(n); // Резервируем память для вектора b
+    std::vector<double> c;
+    c.reserve(m); // Резервируем память для результата
 
     std::vector<std::thread> threads;
 
@@ -75,27 +78,30 @@ void run_parallel(int m, int n, int num_threads) {
 }
 
 void run_sequential(int m, int n) {
-    std::vector<double> a(m * n);
-    std::vector<double> b(n);
-    std::vector<double> c(m);
+    std::vector<double> a;
+    a.reserve(m * n); // Резервируем память для матрицы
+    std::vector<double> b;
+    b.reserve(n); // Резервируем память для вектора b
+    std::vector<double> c;
+    c.reserve(m); // Резервируем память для результата
 
     // Инициализация матрицы последовательно
     for (int i = 0; i < m; i++) {
+        a.push_back(0); // Заполняем нулями для корректного доступа по индексу
         for (int j = 0; j < n; j++) {
             a[i * n + j] = i + j;
         }
-        c[i] = 0.0;
+        c.push_back(0.0); // Заполняем нулями
     }
 
     // Инициализация вектора b последовательно
     for (int j = 0; j < n; j++) {
-        b[j] = j;
+        b.push_back(j);
     }
 
     // Умножение матрицы на вектор последовательно
     matrix_vector_product(a, b, c, m, n, 0, 1); // Здесь один поток
 }
-
 int main() {
     const int sizes[] = { 20000, 40000 };
     const int num_threads_options[] = { 1, 2, 4, 7, 8, 16, 20, 40 };
@@ -117,3 +123,4 @@ int main() {
 
     return 0;
 }
+
